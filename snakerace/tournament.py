@@ -38,8 +38,7 @@ def run_tournament(linespecs, tournament, progress):
 
     controlled_racer = freezer.Debugger(debug_cmd)
 
-    for source, line in linespecs:
-        progress_line = "{source}:{line}".format(source=source, line=line)
+    for (source, line), full_line in linespecs:
         tournament.cleanup()
         controlled_racer.add_temporary_breakpoint(source, line)
         controlled_racer.cont()
@@ -59,9 +58,9 @@ def run_tournament(linespecs, tournament, progress):
             results.add_failure(error_prolog + extract_trace(result))
             # restart the program
             controlled_racer.cont()
-            progress.bad(progress_line)
+            progress.bad(full_line)
         else:
-            progress.good(progress_line)
+            progress.good(full_line)
         results.race_done()
 
     tournament.teardown()

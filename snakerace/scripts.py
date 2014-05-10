@@ -5,6 +5,7 @@ import subprocess
 
 from snakerace import getlines
 from snakerace import tournament
+from snakerace import ui
 
 
 def parse_getlines_params(args):
@@ -40,7 +41,9 @@ def run_tournament():
 
     linespecs = [parse_linespec(line) for line in linespec_source.readlines()]
 
-    result = tournament.run_tournament(linespecs, race_class())
+    progress_indicator = ui.Progress(sys.stdout)
+    result = tournament.run_tournament(
+        linespecs, race_class(), progress_indicator)
 
     race_conditions = result.race_conditions
 

@@ -64,8 +64,9 @@ def run_getlines():
     params = parse_getlines_params(sys.argv[1:])
     getlines.run_with_coverage(params.args, params.sources)
     for source in params.sources:
-        print source
-        print getlines.getlines(source)
+        for line in getlines.getlines(source):
+            sys.stdout.write("{source}:{line}\n".format(
+                source=source, line=line))
 
 
 def get_race(path_to_callable):

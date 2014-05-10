@@ -4,7 +4,9 @@ from coverage import coverage
 
 def run_with_coverage(args, sources):
     proc = subprocess.Popen(
-        ['coverage', 'run', '--source=' + ','.join(sources)] + args)
+        ['coverage', 'run', '--source=' + ','.join(sources)] + args,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE)
     proc.communicate()
 
 

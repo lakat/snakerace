@@ -15,7 +15,7 @@ class Debugger(object):
             self.read_response()
 
         self.subproc.sendline(command)
-        print self.read_response()
+        return self.read_response()
 
     def read_response(self):
         self.subproc.expect("(Pdb)")
@@ -26,7 +26,7 @@ class Debugger(object):
         self.communicate(command)
 
     def cont(self):
-        self.communicate('continue')
+        return self.communicate('continue')
 
     def exit(self):
         self.subproc.sendline('exit')

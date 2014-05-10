@@ -11,7 +11,7 @@ class Debugger(object):
 
     def communicate(self, command):
         if self.subproc is None:
-            self.subproc = pexpect.spawn(' '.join(['pdb', self.script]))
+            self.subproc = pexpect.spawn('python -m pdb ' + self.script)
             self.read_response()
 
         self.subproc.sendline(command)

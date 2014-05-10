@@ -49,7 +49,3 @@ def run_tournament(linespecs, tournament):
 
     tournament.teardown()
     return race_conditions
-
-
-if __name__ == "__main__":
-    main()

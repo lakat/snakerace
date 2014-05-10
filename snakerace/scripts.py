@@ -40,15 +40,18 @@ def run_tournament():
 
     linespecs = [parse_linespec(line) for line in linespec_source.readlines()]
 
-    race_conditions = tournament.run_tournament(linespecs, race_class())
+    result = tournament.run_tournament(linespecs, race_class())
+
+    race_conditions = result.race_conditions
 
     if race_conditions:
         for race_condition in race_conditions:
             sys.stderr.write(race_condition)
             sys.stderr.write('\n')
 
-        sys.stderr.write("\nFAILED: %s race conditions\n\n" % len(
-            race_conditions))
+        sys.stderr.write(
+            "\nFAILED: {failues} out of {race_count} runs\n\n".format(
+                failues=len(race_conditions), race_count=result.race_counter))
         sys.exit(1)
     else:
         sys.stdout.write('no race conditions found\n')

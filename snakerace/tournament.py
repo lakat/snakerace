@@ -18,8 +18,20 @@ def extract_trace(result):
     return result[start:end]
 
 
+class TournamentResult(object):
+    def __init__(self):
+        self.race_conditions = []
+        self.race_counter = 0
+
+    def add_failure(self, msg):
+        self.race_conditions.append(msg)
+
+    def race_done(self):
+        self.race_counter += 1
+
+
 def run_tournament(linespecs, tournament):
-    race_conditions = []
+    results = TournamentResult()
 
     debug_cmd, subproc_args = tournament.setup()
     subproc_cmd = ' '.join(subproc_args)
@@ -27,6 +39,7 @@ def run_tournament(linespecs, tournament):
     controlled_racer = freezer.Debugger(debug_cmd)
 
     for source, line in linespecs:
+        print source,line
         tournament.cleanup()
         controlled_racer.add_temporary_breakpoint(source, line)
         controlled_racer.cont()
@@ -43,9 +56,10 @@ def run_tournament(linespecs, tournament):
                 subproc_cmd=subproc_cmd,
                 source=source,
                 line=line)
-            race_conditions.append(error_prolog + extract_trace(result))
+            results.add_failure(error_prolog + extract_trace(result))
             # restart the program
             controlled_racer.cont()
+        results.race_done()
 
     tournament.teardown()
-    return race_conditions
+    return results

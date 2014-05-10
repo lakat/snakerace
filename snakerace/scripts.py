@@ -39,7 +39,8 @@ def run_tournament():
     else:
         linespec_source = open(params.linespec_file, 'rb')
 
-    linespecs = [parse_linespec(line) for line in linespec_source.readlines()]
+    linespecs = [(parse_linespec(line), line.rstrip())
+        for line in linespec_source.readlines()]
 
     progress_indicator = ui.Progress(sys.stdout)
     result = tournament.run_tournament(
@@ -70,9 +71,12 @@ def run_getlines():
     params = parse_getlines_params(sys.argv[1:])
     getlines.run_with_coverage(params.args, params.sources)
     for source in params.sources:
+        with open(source, 'rb') as srcfile:
+            source_lines = srcfile.read().split('\n')
+
         for line in getlines.getlines(source):
-            sys.stdout.write("{source}:{line}\n".format(
-                source=source, line=line))
+            sys.stdout.write("{source}:{line} {source_line}\n".format(
+                source=source, line=line, source_line=source_lines[line-1]))
 
 
 def get_race(path_to_callable):

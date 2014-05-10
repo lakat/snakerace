@@ -1,7 +1,4 @@
 import textwrap
-import tempfile
-import shutil
-import os
 import subprocess
 import sys
 
@@ -21,57 +18,48 @@ def extract_trace(result):
     return result[start:end]
 
 
-def main():
-    temp_dir = tempfile.mkdtemp()
-    lockdir = os.path.join(temp_dir, 'lockdir')
+class TournamentResult(object):
+    def __init__(self):
+        self.race_conditions = []
+        self.race_counter = 0
 
-    program_a = 'racer.py {lockdir}'.format(
-        lockdir=lockdir)
+    def add_failure(self, msg):
+        self.race_conditions.append(msg)
 
-    program_b = 'python ' + program_a
-    module = 'racey_module.py'
+    def race_done(self):
+        self.race_counter += 1
 
-    getlines.run_with_coverage(program_a.split(), [module])
-    lines = getlines.getlines(module)
 
-    dbg = freezer.Debugger(program_a)
-    dbg.cont()
+def run_tournament(linespecs, tournament):
+    results = TournamentResult()
 
-    race_conditions = []
+    debug_cmd, subproc_args = tournament.setup()
+    subproc_cmd = ' '.join(subproc_args)
 
-    for line in lines:
-        dbg.add_temporary_breakpoint(module, line)
-        dbg.cont()
-        subprocess.call(program_b.split())
-        result = dbg.cont()
+    controlled_racer = freezer.Debugger(debug_cmd)
+
+    for source, line in linespecs:
+        print source,line
+        tournament.cleanup()
+        controlled_racer.add_temporary_breakpoint(source, line)
+        controlled_racer.cont()
+        subprocess.call(subproc_args)
+        result = controlled_racer.cont()
         if failed(result):
             error_prolog = textwrap.dedent("""
-            {program_a} runs until {module} line {line}
-            {program_b} executed completely
-            {program_a} continues, and raises:
+            {debug_cmd} runs until {source} line {line}
+            {subproc_cmd} executed completely
+            {debug_cmd} continues, and raises:
 
             """).format(
-                program_a=program_a,
-                program_b=program_b,
-                module=module,
+                debug_cmd=debug_cmd,
+                subproc_cmd=subproc_cmd,
+                source=source,
                 line=line)
-            race_conditions.append(error_prolog + extract_trace(result))
+            results.add_failure(error_prolog + extract_trace(result))
             # restart the program
-            dbg.cont()
+            controlled_racer.cont()
+        results.race_done()
 
-    shutil.rmtree(temp_dir)
-
-    if race_conditions:
-        for race_condition in race_conditions:
-            sys.stderr.write(race_condition)
-            sys.stderr.write('\n')
-
-        sys.stderr.write("\nFAILED: %s race conditions\n\n" % len(
-            race_conditions))
-        sys.exit(1)
-    else:
-        sys.stdout.write('no race conditions found\n')
-
-
-if __name__ == "__main__":
-    main()
+    tournament.teardown()
+    return results

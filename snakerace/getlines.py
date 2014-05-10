@@ -29,14 +29,3 @@ def getlines(source):
     cov.load()
     result = CoverageResult(cov.analysis2(source))
     return result.covered_lines
-
-
-def main():
-    run_with_coverage(['sample.py'], ['some_module.py'])
-    print (
-        "The following lines has been covered in some_module.py:"
-        + ','.join(str(num) for num in getlines('some_module.py')))
-
-
-if __name__ == "__main__":
-    main()

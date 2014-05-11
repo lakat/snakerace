@@ -26,6 +26,18 @@ class TestParseGetLinesArgs(unittest.TestCase):
             ['prog', 'a', 'b'], result.args)
 
 
+class TestCatArgs(unittest.TestCase):
+    def test_empty_call_reads_stdin(self):
+        result = scripts.parse_cat_params([])
+
+        self.assertEquals(['-'], result.filenames)
+
+    def test_multiple_filenames(self):
+        result = scripts.parse_cat_params(['afile', 'bfile'])
+
+        self.assertEquals(['afile', 'bfile'], result.filenames)
+
+
 class TestTournamentGetLinesArgs(unittest.TestCase):
     def test_empty_call_results_system_exit(self):
         with self.assertRaises(SystemExit) as ctx:

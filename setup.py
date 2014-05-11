@@ -9,6 +9,7 @@ setup(
         'console_scripts': [
             'sr-getlines = snakerace.scripts:run_getlines',
             'sr-break-run-continue = snakerace.scripts:break_run_continue',
+            'sr-cat = snakerace.scripts:cat_main',
         ]
     }
 )

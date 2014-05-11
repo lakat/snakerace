@@ -66,12 +66,3 @@ class TestImport(unittest.TestCase):
         result = scripts.get_race(fun_name)
 
         self.assertEquals(example_fun, result)
-
-
-class TestParseLineSpec(unittest.TestCase):
-    def test_parsing(self):
-        result = scripts.parse_linespec("something/kkk.py:3 Some code")
-
-        self.assertEquals(
-            ('something/kkk.py', 3),
-            result)

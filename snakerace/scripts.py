@@ -5,7 +5,7 @@ import subprocess
 
 from snakerace.proto import getlines
 from snakerace.proto import tournament
-from snakerace import ui
+from snakerace import linespec
 
 
 def parse_getlines_params(args):
@@ -39,12 +39,13 @@ def run_tournament():
     else:
         linespec_source = open(params.linespec_file, 'rb')
 
-    linespecs = [(parse_linespec(line), line.rstrip())
-        for line in linespec_source.readlines()]
+    linespecs = [
+        linespec.parse(line)
+        for line in linespec_source.readlines()
+    ]
 
-    progress_indicator = ui.Progress(sys.stdout)
     result = tournament.run_tournament(
-        linespecs, race_class(), progress_indicator)
+        linespecs, race_class(), sys.stdout)
 
     race_conditions = result.race_conditions
 
@@ -61,22 +62,12 @@ def run_tournament():
         sys.stdout.write('no race conditions found\n')
 
 
-def parse_linespec(line):
-    linespec = line.split(' ')[0]
-    fname, lineno_string = linespec.split(':')
-    return (fname, int(lineno_string))
-
-
 def run_getlines():
     params = parse_getlines_params(sys.argv[1:])
     getlines.run_with_coverage(params.args, params.sources)
     for source in params.sources:
-        with open(source, 'rb') as srcfile:
-            source_lines = srcfile.read().split('\n')
-
-        for line in getlines.getlines(source):
-            sys.stdout.write("{source}:{line} {source_line}\n".format(
-                source=source, line=line, source_line=source_lines[line-1]))
+        for linespec_ in getlines.getlines(source):
+            sys.stdout.write(linespec_.as_line())
 
 
 def get_race(path_to_callable):

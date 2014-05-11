@@ -1,6 +1,8 @@
 import subprocess
 from coverage import coverage
 
+from snakerace import linespec
+
 
 def run_with_coverage(args, sources):
     proc = subprocess.Popen(
@@ -30,4 +32,4 @@ def getlines(source):
     cov = coverage()
     cov.load()
     result = CoverageResult(cov.analysis2(source))
-    return result.covered_lines
+    return [linespec.LineSpec(source, line) for line in result.covered_lines]

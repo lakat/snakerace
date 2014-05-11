@@ -31,7 +31,7 @@ def parse_tournament_params(args):
     return parser.parse_args(args)
 
 
-def run_tournament():
+def break_run_continue():
     params = parse_tournament_params(sys.argv[1:])
     race_class = get_race(params.race)
     if params.linespec_file == '-':

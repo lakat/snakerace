@@ -8,7 +8,7 @@ setup(
     entry_points={
         'console_scripts': [
             'sr-getlines = snakerace.scripts:run_getlines',
-            'sr-tournament = snakerace.scripts:run_tournament',
+            'sr-break-run-continue = snakerace.scripts:break_run_continue',
         ]
     }
 )

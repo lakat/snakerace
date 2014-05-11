@@ -13,3 +13,5 @@ In this scenario, Process A is stopped at a specific breakpoint, Process B
 is executed and completed, and after this Process A is Continued.
 
 ![Alt text](doc/sequence_diagrams.png)
+
+To see an example, look at the [example script](examples/exercise.sh)

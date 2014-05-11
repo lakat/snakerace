@@ -3,8 +3,8 @@ import argparse
 import importlib
 import subprocess
 
-from snakerace import getlines
-from snakerace import tournament
+from snakerace.proto import getlines
+from snakerace.proto import tournament
 from snakerace import ui
 
 

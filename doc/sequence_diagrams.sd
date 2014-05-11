@@ -1,0 +1,21 @@
+#![ Break Run Continue]
+
+testcase:Break-Return-Continue
+/pdb:PDB
+/process_a:Process
+/process_b:Process
+
+testcase:pdb.new()
+pdb:process_a.new()
+testcase:pdb.set_breakpoint()
+testcase:pdb.continue()
+*5 process_a
+process_a is now paused
+at the specified breakpoint
+*5
+(,5)pdb:process_a.start()
+
+testcase:process_b.new()
+
+testcase:process_b.wait()
+testcase:process_a.continue()

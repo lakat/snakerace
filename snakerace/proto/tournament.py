@@ -30,7 +30,7 @@ class TournamentResult(object):
         self.race_counter += 1
 
 
-def run_tournament(linespecs, tournament, progress):
+def run_tournament(linespecs, tournament, output_stream):
     results = TournamentResult()
 
     debug_cmd, subproc_args = tournament.setup()
@@ -38,9 +38,10 @@ def run_tournament(linespecs, tournament, progress):
 
     controlled_racer = freezer.Debugger(debug_cmd)
 
-    for (source, line), full_line in linespecs:
+    for linespec in linespecs:
         tournament.cleanup()
-        controlled_racer.add_temporary_breakpoint(source, line)
+        controlled_racer.add_temporary_breakpoint(
+            linespec.fname, linespec.lineno)
         controlled_racer.cont()
         subprocess.call(subproc_args)
         result = controlled_racer.cont()
@@ -53,14 +54,12 @@ def run_tournament(linespecs, tournament, progress):
             """).format(
                 debug_cmd=debug_cmd,
                 subproc_cmd=subproc_cmd,
-                source=source,
-                line=line)
+                source=linespec.fname,
+                line=linespec.lineno)
             results.add_failure(error_prolog + extract_trace(result))
             # restart the program
             controlled_racer.cont()
-            progress.bad(full_line)
-        else:
-            progress.good(full_line)
+            output_stream.write(linespec.as_line())
         results.race_done()
 
     tournament.teardown()
